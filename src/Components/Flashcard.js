@@ -1,55 +1,53 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from './Button.js';
 import Card from './Card.js';
 import { data } from '../data.js';
 
-/*
-App.jsx
-  |_Flashcard.jsx
-      |_Button.jsx ('prev')
-      |_Card.jsx ('Hello' text is displayed)
-      |_Button.jsx ('next')
-*/
-
 export default function Flashcard() {
+  const flashcardData = data.data;
   const [cardIndex, setCardIndex] = useState(0);
-  const [flashcardData, setFlashcardData] = useState([]);
-  const [currFlashcard, setCurrFlashcard] = useState(flashcardData[cardIndex]);
-  const [cardText, setCardText] = useState('Hello World');
+  const [language, setLanguage] = useState('English');
+  const [cardText, setCardText] = useState('');
 
   useEffect(() => {
-    setFlashcardData(data.data);
-    setCurrFlashcard(data.data[cardIndex]);
-    setCardText(currFlashcard.English);
-    console.log(cardText);
-    const sample = flashcardData[cardIndex];
-    console.log(sample['English']);
-    //setCardText(flashcardData[position].English);
-  }, [flashcardData]);
+    setCardText(flashcardData[cardIndex][language]); //
+  }, [language, flashcardData, cardIndex]);
+
+  function handleFlashcardClick() {
+    setLanguage((currState) =>
+      currState === 'English' ? setLanguage('French') : setLanguage('English')
+    );
+  }
 
   function handlePrevClick() {
     const lastCardIndex = flashcardData.length - 1;
     if (cardIndex === 0) {
-      setCardIndex((curr) => curr === lastCardIndex);
+      setCardIndex(lastCardIndex);
     } else {
       setCardIndex((curr) => curr - 1);
     }
+    setLanguage('English'); //reset language to English
   }
 
   function handleNextClick() {
     const lastCardIndex = flashcardData.length - 1;
     if (cardIndex === lastCardIndex) {
-      setCardIndex((curr) => curr === 0);
+      setCardIndex(0);
     } else {
       setCardIndex((curr) => curr + 1);
     }
+    setLanguage('English');
   }
 
   return (
     <div className='Flashcard'>
-      <Button text='prev' onClick={handlePrevClick} />
-      <Card text={cardText} />
-      <Button text='next' onClick={handleNextClick} />
+      <Button text='<' handleClick={handlePrevClick} />
+      <Card
+        text={cardText}
+        language={language}
+        handleFlashcardClick={handleFlashcardClick}
+      />
+      <Button text='>' handleClick={handleNextClick} />
     </div>
   );
 }
